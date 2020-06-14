@@ -1,0 +1,173 @@
+RUn pipenv shell , on this folder
+pipenv install django djangorestframework django-rest-knox
+django-admin startproject leadmanager
+python manage.py startapp leads
+
+add  'leads',
+    'rest_framework', inside settings.py file of root
+
+Create the leads model in models.py file
+
+python manage.py makemigrations leads
+python manage.py migrate
+
+in the urls.py file of leads
+
+from rest_framework import routers
+from .api import LeadViewSet
+
+router=routers.DefaultRouter()
+router.register('api/leads',LeadViewSet,'name_forrevlink')
+
+urlpatterns=router.urls 
+
+The LeadViewSet inside api.py is as below
+
+	class LeadViewSet(viewsets.ModelViewSet):
+		queryset=Lead.objects.all()
+		permission_classes=[
+		permissions.AllowAny
+		]
+		serializer_class=LeadSerializer	
+
+api/leads/1 will give the first entry (dont know how this routing works)
+
+We have created full CRUD API with minimal code. (can use post,get,delete,update requests from django-rest interface through browser)
+
+
+Setting up react frontend
+
+python manage.py startapp frontend
+Inside frontend create a folder named src 
+Inside src create components
+
+create ./frontend/templates/frontend 
+       ./frontend/static/frontend
+
+outside our project folder run (DjangoTraversy)
+  npm init -y  //-y means that we dont need to answer any questions
+
+  npm i -D webpack webpack-cli
+
+  npm i -D @babel/core babel-loader @babel/preset-env @babel/preset-react babel-plugin-transform-class-properties
+
+  npm i react react-dom prop-types
+
+Inside DjangoTraversy create a file named .babelrc and put in contents
+Inside DjangoTraversy create webpack.config.js and put in contents
+
+make the following change in package.json
+scripts": {
+    "dev": "webpack --mode development ./leadmanager/frontend/src/index.js --output ./leadmanager/frontend/static/frontend/main.js",
+    "build": "webpack --mode production ./leadmanager/frontend/src/index.js --output ./leadmanager/frontend/static/frontend/main.js"
+  },
+
+
+* Create index.js inside leadmanager>frontend>src 
+  and App.js inside leadmanager>frontend>src>components
+
+*inside frontend templates, create a file named index.html
+
+* goto bootswatch and grab cosmo
+
+ ie download cosmo's bootstrap.css
+ put it inside static/frontend and link it in index.html in templates
+
+ get the three bootstrapjs  links from getbootstrap.com  too and  put it inside index.html so that it looks like
+
+				 <!DOCTYPE html>
+				<html>
+				<head>
+					<title>Lead Manager</title>
+				</head>
+				<body>
+				   <div id="app"></div>
+				   {% load static %}
+				   <link rel="stylesheet" type="text/css" href="{% static 'frontend/bootstrap.css' %}" />
+				   <script src="{% static "frontend/main.js" %}"></script>
+
+				   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+
+					<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+					<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+					
+				</body>
+				</html>
+* include urls.py inside frontend and set the views.py appropriately,
+* also add frontend under installed apps in settings.py
+
+* run npm run build inside djangoTraversy folder main.js gets created inside static
+
+* Now goto localhost:8000/fe and see react app running (fe is the route provided in urls.py)
+
+*each time you make a change inside your src folder you have to run npm run dev again. To avoid this
+  add --watch to the package.json entry  "--mode development --watch"
+
+*Installed es7,redux,graph ql, snippets addon , now just press rce for react snippet
+
+Lec 3
+* npm i redux react-redux redux-thunk redux-devtools-extension
+
+create a file store.js inside src
+https://youtu.be/BmL8iaLMnQ0?list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&t=335
+
+*create reducers/index.js inside src 
+*create file, leads.js inside reducers
+https://youtu.be/BmL8iaLMnQ0?list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&t=700
+
+*create src/actions/types.js
+*create src/actions/leads.js
+* install axios  npm i axios
+https://youtu.be/BmL8iaLMnQ0?list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&t=2041
+
+
+* Type in the Form template inside the form component
+*npm i react-alert react-alert-template-basic react-transition-group
+https://youtu.be/Fia-GGgHpK0?list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&t=171
+* create src/components/layouts/Alert.js
+  THe export from alerts should be export default withAlert()(Alerts);
+  Then wrap the fragment in App.js with
+							<AlertProvider template={AlertTemplate} {...alertOptions}></AlertProvider>
+* create reducers/errors.js
+* create reducers/messages.js
+* Associate users with leads , for this add user as a foreign key in leads
+* import user in models.py
+       from django.contrib.auth.models import User
+
+* Inorder to use knox for token authentication add 'knox' to installed apps in settings.py and also add
+				REST_FRAMEWORK={
+					'DEFAULT_AUTHENTICATION_CLASSES':('knox.auth.TokenAuthentication',)
+				}
+* Then python manage.py migrate
+* then create a new app accounts
+   python manage.py startapp accounts
+
+* Add it in settings
+
+https://youtu.be/0d7cIfiydAc?list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&t=1152
+
+https://www.youtube.com/watch?v=EmAc4wQikwY&list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&index=6
+
+*npm i react-router-dom
+
+*Bring it in in App.js and put the fragment inside a router wrap
+  <Route exact path="/" component={Dashboard} />  //wrap dashboard like this inside a <switch> wrap
+
+* components/accounts/Register.js and components/accounts/Login.js
+  and bring both insed the <switch> wrap above with appropriate paths
+
+https://youtu.be/EmAc4wQikwY?list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&t=350
+
+* Create components/common/PrivateRoute.js 
+  and set up such that the routes in app.js as routed through PrivateRoute for authentication
+
+https://youtu.be/EmAc4wQikwY?list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&t=1217
+
+https://youtu.be/EmAc4wQikwY?list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&t=1464
+
+* Create reducers/auth.js and actions/auth.js
+* Create a loadUser function inside actions/auth.js which can be exported and used in app.js.
+  loadUser will dispatch at the reducers creating the required states
+
+  https://youtu.be/kfpY5BsIoFg?list=PLillGF-RfqbbRA-CIUxlxkUpbq0IFkX60&t=597
