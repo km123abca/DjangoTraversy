@@ -20,6 +20,9 @@ export class Alerts extends Component {
 
       if (error.msg.name) alert.error(`Name: ${error.msg.name}`);
       if (error.msg.email) alert.error(`Email: ${error.msg.email}`);
+
+      if (error.msg.non_field_errors)
+        alert.error(error.msg.non_field_errors.join());
     }
     if (message != prevProps.message) {
       if (message.leadDeleted) alert.success(message.leadDeleted);

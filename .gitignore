@@ -1,3 +1,4 @@
 .vscode/
 node_modules/
 vsc.bat
+node_modules
